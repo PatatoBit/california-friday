@@ -1,9 +1,11 @@
 import { dirname, importx } from "@discordx/importer";
-import type { Interaction, Message } from "discord.js";
+import type { Interaction, Message, TextChannel } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 
 import dotenv from "dotenv";
+import { CronJob } from "cron";
+
 dotenv.config();
 
 export const bot = new Client({
@@ -32,6 +34,23 @@ bot.once("ready", async () => {
   await bot.initApplicationCommands();
 
   console.log("Bot started");
+
+  const job = new CronJob(
+    "0 0 * * FRI",
+    function () {
+      console.log("Today is friday in California");
+      const channel = bot.channels.cache.get(
+        process.env.CHANNEL_ID!
+      ) as TextChannel;
+
+      channel?.send(
+        "https://tenor.com/view/today-is-friday-in-california-gif-25066545"
+      );
+    },
+    null,
+    true,
+    "America/Los_Angeles"
+  );
 });
 
 bot.on("interactionCreate", (interaction: Interaction) => {
